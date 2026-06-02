@@ -45,3 +45,32 @@ table{display:block;overflow-x:auto;white-space:nowrap;font-size:14px}
 th,td{padding:10px}
 .danger{margin-left:6px}
 }
+
+@media(max-width:800px){
+.app{flex-direction:column}
+.sidebar{width:100%;padding:12px;flex-direction:row;gap:8px;overflow-x:auto}
+.sidebar h2{display:none}
+.sidebar a,.sidebar button{white-space:nowrap;font-size:14px;padding:9px 12px}
+.sidebar button{margin-top:0}
+.content{padding:14px}
+.content h1{font-size:24px}
+
+.filters,.form-grid{flex-direction:column}
+.filters input,.filters button,.form-grid input,.form-grid button{width:100%;min-width:0}
+
+.cards{grid-template-columns:1fr;gap:12px}
+.card{padding:16px}
+.card strong{font-size:24px}
+
+table,thead,tbody,tr,th,td{display:block}
+thead{display:none}
+table{box-shadow:none;background:transparent}
+tr{background:white;margin-bottom:12px;border-radius:14px;padding:12px;box-shadow:0 6px 20px #0001}
+td{border:0;padding:8px 4px}
+td:last-child{display:flex;gap:8px}
+td:last-child button{flex:1;margin:0}
+.danger{margin-left:0}
+
+.auth{padding:16px}
+.auth-card{width:100%;max-width:380px}
+}
