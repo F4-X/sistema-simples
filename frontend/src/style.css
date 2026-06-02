@@ -45,3 +45,9 @@ font-size:13px
 font-size:22px
 }
 }
+
+.sidebar{
+position:sticky;
+top:0;
+z-index:100;
+}
