@@ -12,13 +12,20 @@ export default function Layout() {
   return (
     <div className="app">
       <aside className="sidebar">
-        <h2>Sistema</h2>
-        <NavLink to="/">Dashboard</NavLink>
-        <NavLink to="/receitas">Clientes/Receitas</NavLink>
-        <NavLink to="/despesas">Despesas</NavLink>
+        <div className="sidebar-title">Sistema</div>
+
+        <nav className="menu">
+          <NavLink to="/">Dashboard</NavLink>
+          <NavLink to="/receitas">Receitas</NavLink>
+          <NavLink to="/despesas">Despesas</NavLink>
+        </nav>
+
         <button onClick={sair}>Sair</button>
       </aside>
-      <main className="content"><Outlet /></main>
+
+      <main className="content">
+        <Outlet />
+      </main>
     </div>
   );
 }
