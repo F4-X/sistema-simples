@@ -28,7 +28,11 @@ router.post('/cadastro', async (req, res) => {
 
     return res.status(201).json(novoUsuario.rows[0]);
   } catch (error) {
-    return res.status(500).json({ mensagem: 'Erro ao cadastrar usuário.' });
+    console.error('ERRO CADASTRO:', error);
+    return res.status(500).json({
+      mensagem: 'Erro ao cadastrar usuário.',
+      erro: error.message
+    });
   }
 });
 
@@ -64,7 +68,11 @@ router.post('/login', async (req, res) => {
       usuario: { id: usuario.id, nome: usuario.nome, email: usuario.email }
     });
   } catch (error) {
-    return res.status(500).json({ mensagem: 'Erro ao fazer login.' });
+    console.error('ERRO LOGIN:', error);
+    return res.status(500).json({
+      mensagem: 'Erro ao fazer login.',
+      erro: error.message
+    });
   }
 });
 
