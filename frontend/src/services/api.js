@@ -1,4 +1,4 @@
-const API_URL = 'https://meufinanceiro3.com';
+const API_URL = 'https://meufinanceiro3.com/api';
 
 export async function apiFetch(path, options = {}) {
   const token = localStorage.getItem('token');
