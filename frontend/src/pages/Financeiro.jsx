@@ -5,6 +5,8 @@ import { apiFetch } from '../services/api.js';
 const meses = Array.from({ length: 12 }, (_, i) => i + 1);
 const anos = Array.from({ length: 10 }, (_, i) => i + 1);
 
+const anoReal = (ano) => 2025 + Number(ano);
+
 const nomesMeses = [
   'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
   'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
@@ -84,6 +86,7 @@ function FormularioLancamento({ tipo, ano, mes, aoSalvar }) {
           Dia
           <input type="number" min="1" max="31" value={dia} onChange={(e) => setDia(e.target.value)} />
         </label>
+
         <label>
           Valor
           <input type="number" min="0" step="0.01" value={valor} onChange={(e) => setValor(e.target.value)} />
@@ -92,12 +95,18 @@ function FormularioLancamento({ tipo, ano, mes, aoSalvar }) {
 
       <label>
         Descrição
-        <input value={descricao} onChange={(e) => setDescricao(e.target.value)} placeholder={tipo === 'gasto' ? 'Ex: Aluguel' : 'Ex: Cliente João'} />
+        <input
+          value={descricao}
+          onChange={(e) => setDescricao(e.target.value)}
+          placeholder={tipo === 'gasto' ? 'Ex: Aluguel' : 'Ex: Cliente João'}
+        />
       </label>
 
       {erro && <small className="erro">{erro}</small>}
 
-      <button disabled={carregando}>{carregando ? 'Salvando...' : 'Adicionar'}</button>
+      <button disabled={carregando}>
+        {carregando ? 'Salvando...' : 'Adicionar'}
+      </button>
     </form>
   );
 }
@@ -105,8 +114,10 @@ function FormularioLancamento({ tipo, ano, mes, aoSalvar }) {
 function ColunaLancamentos({ titulo, tipo, itens, ano, mes, diaAtual, aoAtualizar }) {
   const ativos = itens.filter((item) => Number(item.dia) <= diaAtual);
   const futuros = itens.filter((item) => Number(item.dia) > diaAtual);
+
   const totalAtivo = ativos.reduce((soma, item) => soma + Number(item.valor), 0);
   const totalFuturo = futuros.reduce((soma, item) => soma + Number(item.valor), 0);
+
   const agrupados = agruparPorDia(itens);
   const dias = Object.keys(agrupados).map(Number).sort((a, b) => a - b);
 
@@ -122,6 +133,7 @@ function ColunaLancamentos({ titulo, tipo, itens, ano, mes, diaAtual, aoAtualiza
     <section className={`coluna ${tipo}`}>
       <div className="cabecalho-coluna">
         <h2>{titulo}</h2>
+
         <div className="totais-coluna">
           <span>Ativo: <strong>{dinheiro(totalAtivo)}</strong></span>
           <span>Futuro: <strong>{dinheiro(totalFuturo)}</strong></span>
@@ -136,14 +148,17 @@ function ColunaLancamentos({ titulo, tipo, itens, ano, mes, diaAtual, aoAtualiza
         {dias.map((dia) => (
           <div className="grupo-dia" key={dia}>
             <h3>Dia {String(dia).padStart(2, '0')}</h3>
+
             {agrupados[dia].map((item) => {
               const futuro = Number(item.dia) > diaAtual;
+
               return (
                 <div className="item-lancamento" key={item.id}>
                   <div>
                     <strong>{item.descricao}</strong>
                     {futuro && <small>Futuro</small>}
                   </div>
+
                   <div className="item-acoes">
                     <span>{dinheiro(item.valor)}</span>
                     <button onClick={() => excluir(item.id)}>Excluir</button>
@@ -160,6 +175,7 @@ function ColunaLancamentos({ titulo, tipo, itens, ano, mes, diaAtual, aoAtualiza
 
 export default function Financeiro() {
   const navigate = useNavigate();
+
   const [ano, setAno] = useState(1);
   const [mes, setMes] = useState(1);
   const [lancamentos, setLancamentos] = useState([]);
@@ -172,6 +188,7 @@ export default function Financeiro() {
     try {
       setErro('');
       setCarregando(true);
+
       const data = await apiFetch(`/lancamentos?ano=${ano}&mes=${mes}`);
       setLancamentos(data);
     } catch (error) {
@@ -192,14 +209,26 @@ export default function Financeiro() {
   }
 
   const diaAtual = useMemo(() => diaAtualParaMesSelecionado(mes), [mes]);
+
   const gastos = lancamentos.filter((item) => item.tipo === 'gasto');
   const lucros = lancamentos.filter((item) => item.tipo === 'lucro');
 
   const totais = useMemo(() => {
-    const gastosAtivos = gastos.filter((i) => Number(i.dia) <= diaAtual).reduce((s, i) => s + Number(i.valor), 0);
-    const gastosFuturos = gastos.filter((i) => Number(i.dia) > diaAtual).reduce((s, i) => s + Number(i.valor), 0);
-    const lucrosAtivos = lucros.filter((i) => Number(i.dia) <= diaAtual).reduce((s, i) => s + Number(i.valor), 0);
-    const lucrosFuturos = lucros.filter((i) => Number(i.dia) > diaAtual).reduce((s, i) => s + Number(i.valor), 0);
+    const gastosAtivos = gastos
+      .filter((i) => Number(i.dia) <= diaAtual)
+      .reduce((s, i) => s + Number(i.valor), 0);
+
+    const gastosFuturos = gastos
+      .filter((i) => Number(i.dia) > diaAtual)
+      .reduce((s, i) => s + Number(i.valor), 0);
+
+    const lucrosAtivos = lucros
+      .filter((i) => Number(i.dia) <= diaAtual)
+      .reduce((s, i) => s + Number(i.valor), 0);
+
+    const lucrosFuturos = lucros
+      .filter((i) => Number(i.dia) > diaAtual)
+      .reduce((s, i) => s + Number(i.valor), 0);
 
     return {
       saldoAtual: lucrosAtivos - gastosAtivos,
@@ -214,6 +243,7 @@ export default function Financeiro() {
           <h1>Sistema Financeiro</h1>
           <p>{usuario.nome ? `Olá, ${usuario.nome}` : 'Controle mensal de gastos e lucros'}</p>
         </div>
+
         <button className="sair" onClick={sair}>Sair</button>
       </header>
 
@@ -221,13 +251,21 @@ export default function Financeiro() {
         <label>
           Ano
           <select value={ano} onChange={(e) => setAno(Number(e.target.value))}>
-            {anos.map((a) => <option key={a} value={a}>Ano {a}</option>)}
+            {anos.map((a) => (
+              <option key={a} value={a}>
+                {anoReal(a)}
+              </option>
+            ))}
           </select>
         </label>
 
         <div className="meses">
           {meses.map((m) => (
-            <button key={m} className={m === mes ? 'ativo' : ''} onClick={() => setMes(m)}>
+            <button
+              key={m}
+              className={m === mes ? 'ativo' : ''}
+              onClick={() => setMes(m)}
+            >
               {m}
             </button>
           ))}
@@ -237,12 +275,14 @@ export default function Financeiro() {
       <section className="resumo-geral">
         <div>
           <span>Mês selecionado</span>
-          <strong>{nomesMeses[mes - 1]} / Ano {ano}</strong>
+          <strong>{nomesMeses[mes - 1]} / {anoReal(ano)}</strong>
         </div>
+
         <div>
           <span>Saldo atual</span>
           <strong>{dinheiro(totais.saldoAtual)}</strong>
         </div>
+
         <div>
           <span>Saldo projetado</span>
           <strong>{dinheiro(totais.saldoProjetado)}</strong>
@@ -253,8 +293,25 @@ export default function Financeiro() {
       {carregando && <p className="carregando">Carregando...</p>}
 
       <section className="painel-duplo">
-        <ColunaLancamentos titulo="Gastos" tipo="gasto" itens={gastos} ano={ano} mes={mes} diaAtual={diaAtual} aoAtualizar={carregar} />
-        <ColunaLancamentos titulo="Lucros" tipo="lucro" itens={lucros} ano={ano} mes={mes} diaAtual={diaAtual} aoAtualizar={carregar} />
+        <ColunaLancamentos
+          titulo="Gastos"
+          tipo="gasto"
+          itens={gastos}
+          ano={ano}
+          mes={mes}
+          diaAtual={diaAtual}
+          aoAtualizar={carregar}
+        />
+
+        <ColunaLancamentos
+          titulo="Lucros"
+          tipo="lucro"
+          itens={lucros}
+          ano={ano}
+          mes={mes}
+          diaAtual={diaAtual}
+          aoAtualizar={carregar}
+        />
       </section>
     </main>
   );
